@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_stripe/flutter_stripe.dart';
 
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -13,7 +12,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   Map<String, dynamic>? paymentIntentData;
   @override
   Widget build(BuildContext context) {
@@ -23,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Center(
         child: InkWell(
-          onTap: ()async{
+          onTap: () async {
             await makePayment();
           },
           child: Container(
@@ -31,7 +29,10 @@ class _HomeScreenState extends State<HomeScreen> {
             width: 200,
             color: Colors.green,
             child: Center(
-              child: Text('Pay' , style: TextStyle(color: Colors.white , fontSize: 20),),
+              child: Text(
+                'Pay',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
             ),
           ),
         ),
@@ -41,9 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> makePayment() async {
     try {
-
       paymentIntentData =
-      await createPaymentIntent('20', 'USD'); //json.decode(response.body);
+          await createPaymentIntent('20', 'USD'); //json.decode(response.body);
       // print('Response body==>${response.body.toString()}');
       await Stripe.instance.initPaymentSheet(
           paymentSheetParameters: SetupPaymentSheetParameters(
@@ -51,51 +51,29 @@ class _HomeScreenState extends State<HomeScreen> {
               applePay: true,
               googlePay: true,
               testEnv: true,
+              customerId: "aldha98d24u92894",
               style: ThemeMode.dark,
               merchantCountryCode: 'US',
-              merchantDisplayName: 'ANNIE')).then((value){
-      });
-
+              merchantDisplayName: 'Ali Hassan'));
 
       ///now finally display payment sheeet
 
-      displayPaymentSheet();
+      await Stripe.instance.presentPaymentSheet();
     } catch (e, s) {
       print('exception:$e$s');
     }
   }
 
   displayPaymentSheet() async {
-
     try {
-      await Stripe.instance.presentPaymentSheet(
-          parameters: PresentPaymentSheetParameters(
-            clientSecret: paymentIntentData!['client_secret'],
-            confirmPayment: true,
-          )).then((newValue){
-
-
-        print('payment intent'+paymentIntentData!['id'].toString());
-        print('payment intent'+paymentIntentData!['client_secret'].toString());
-        print('payment intent'+paymentIntentData!['amount'].toString());
-        print('payment intent'+paymentIntentData.toString());
-        //orderPlaceApi(paymentIntentData!['id'].toString());
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("paid successfully")));
-
-        paymentIntentData = null;
-
-      }).onError((error, stackTrace){
-        print('Exception/DISPLAYPAYMENTSHEET==> $error $stackTrace');
-      });
-
-
+      await Stripe.instance.presentPaymentSheet();
     } on StripeException catch (e) {
       print('Exception/DISPLAYPAYMENTSHEET==> $e');
       showDialog(
           context: context,
           builder: (_) => AlertDialog(
-            content: Text("Cancelled "),
-          ));
+                content: Text("Cancelled "),
+              ));
     } catch (e) {
       print('$e');
     }
@@ -109,16 +87,16 @@ class _HomeScreenState extends State<HomeScreen> {
         'currency': currency,
         'payment_method_types[]': 'card'
       };
-      print(body);
+
       var response = await http.post(
           Uri.parse('https://api.stripe.com/v1/payment_intents'),
           body: body,
           headers: {
             'Authorization':
-            'Bearer your token',
+                'Bearer sk_test_51KWJZaLUKdam5VbBnkFNJMsURjoZyXRYx7c3uekpxE3Vzz0Tvl3xbqa40JRFwvOUPeyeGzYDGdrBDou1wl7uosSp00fG7bOurq',
             'Content-Type': 'application/x-www-form-urlencoded'
           });
-      print('Create Intent reponse ===> ${response.body.toString()}');
+
       return jsonDecode(response.body);
     } catch (err) {
       print('err charging user: ${err.toString()}');
@@ -126,8 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   calculateAmount(String amount) {
-    final a = (int.parse(amount)) * 100 ;
+    final a = (int.parse(amount)) * 100;
     return a.toString();
   }
-
 }
