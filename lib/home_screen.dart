@@ -17,7 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stripe Tutorial'),
+        title: const Text('Stripe Tutorial'),
       ),
       body: Center(
         child: InkWell(
@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
             height: 50,
             width: 200,
             color: Colors.green,
-            child: Center(
+            child: const Center(
               child: Text(
                 'Pay',
                 style: TextStyle(color: Colors.white, fontSize: 20),
@@ -59,23 +59,22 @@ class _HomeScreenState extends State<HomeScreen> {
       ///now finally display payment sheeet
 
       await Stripe.instance.presentPaymentSheet();
-    } catch (e, s) {
-      print('exception:$e$s');
+    } catch (e) {
+      throw Exception(e);
     }
   }
 
   displayPaymentSheet() async {
     try {
       await Stripe.instance.presentPaymentSheet();
-    } on StripeException catch (e) {
-      print('Exception/DISPLAYPAYMENTSHEET==> $e');
+    } on StripeException catch (_) {
       showDialog(
           context: context,
-          builder: (_) => AlertDialog(
+          builder: (_) => const AlertDialog(
                 content: Text("Cancelled "),
               ));
     } catch (e) {
-      print('$e');
+      throw Exception(e);
     }
   }
 
@@ -99,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       return jsonDecode(response.body);
     } catch (err) {
-      print('err charging user: ${err.toString()}');
+      throw Exception(err);
     }
   }
 
