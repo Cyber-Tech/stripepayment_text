@@ -13,6 +13,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic>? paymentIntentData;
+  bool loading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,20 +21,14 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Stripe Tutorial'),
       ),
       body: Center(
-        child: InkWell(
-          onTap: () async {
+        child: ElevatedButton(
+          onPressed: () async {
+            onLoading(context);
             await makePayment();
           },
-          child: Container(
-            height: 50,
-            width: 200,
-            color: Colors.green,
-            child: const Center(
-              child: Text(
-                'Pay',
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
-            ),
+          child: Text(
+            'Pay',
+            style: TextStyle(color: Colors.white, fontSize: 20),
           ),
         ),
       ),
@@ -45,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
       paymentIntentData =
           await createPaymentIntent('20', 'USD'); //json.decode(response.body);
       // print('Response body==>${response.body.toString()}');
+
       await Stripe.instance.initPaymentSheet(
           paymentSheetParameters: SetupPaymentSheetParameters(
               paymentIntentClientSecret: paymentIntentData!['client_secret'],
@@ -55,11 +51,22 @@ class _HomeScreenState extends State<HomeScreen> {
               style: ThemeMode.dark,
               merchantCountryCode: 'US',
               merchantDisplayName: 'Ali Hassan'));
+      // await Stripe.instance
+      //     .handleCardAction(paymentIntentData!['client_secret'])
+      //     .then((value) => print(value.id));
 
       ///now finally display payment sheeet
 
-      await Stripe.instance.presentPaymentSheet();
+      await displayPaymentSheet();
+      //that method return the the payment id
+      await Stripe.instance
+          .handleCardAction(paymentIntentData!['client_secret'])
+          .then((value) {
+        Navigator.pop(context);
+        print(value.toJson());
+      });
     } catch (e) {
+      Navigator.pop(context);
       throw Exception(e);
     }
   }
@@ -74,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 content: Text("Cancelled "),
               ));
     } catch (e) {
+      Navigator.pop(context);
       throw Exception(e);
     }
   }
@@ -98,6 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
       return jsonDecode(response.body);
     } catch (err) {
+      Navigator.pop(context);
       throw Exception(err);
     }
   }
@@ -105,5 +114,18 @@ class _HomeScreenState extends State<HomeScreen> {
   calculateAmount(String amount) {
     final a = (int.parse(amount)) * 100;
     return a.toString();
+  }
+
+  void onLoading(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return SizedBox(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            child: const Center(child: CircularProgressIndicator()));
+      },
+    );
   }
 }
