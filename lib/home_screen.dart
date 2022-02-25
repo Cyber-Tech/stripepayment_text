@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onLoading(context);
             await makePayment();
           },
-          child: Text(
+          child: const Text(
             'Pay',
             style: TextStyle(color: Colors.white, fontSize: 20),
           ),
