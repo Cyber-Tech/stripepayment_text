@@ -100,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
           body: body,
           headers: {
             'Authorization':
-                'Bearer sk_test_51KWJZaLUKdam5VbBnkFNJMsURjoZyXRYx7c3uekpxE3Vzz0Tvl3xbqa40JRFwvOUPeyeGzYDGdrBDou1wl7uosSp00fG7bOurq',
+                '',
             'Content-Type': 'application/x-www-form-urlencoded'
           });
 
