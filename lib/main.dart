@@ -6,8 +6,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   Stripe.publishableKey =
-      'pk_test_51KWJZaLUKdam5VbBQBZhHql8HSwSENgXOuGIy1xCEzDHAVyIPeq1uJQtvVuyN4buUlKGYArrxEVf62Ooc3amuoG600x8tQhHvu';
-  Stripe.merchantIdentifier = 'acct_1KWJZaLUKdam5VbB';
+      '';
+  Stripe.merchantIdentifier = '';
   await Stripe.instance.applySettings();
   runApp(const MyApp());
 }
